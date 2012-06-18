@@ -20,51 +20,55 @@ public class ColoniaFormiga {
 
     public static void main(String[] args) {
         int i, j;
-        
+
         int iteracoes = 30, w;
+        int[] solucoes = new int[iteracoes];
+        int somaSolucao = 0;
+        double media = 0, dp=0;
+
         for (w = 0; w < iteracoes; w++) {
-        double[] probabilidade = new double[NUM_REQUISITOS];
+            double[] probabilidade = new double[NUM_REQUISITOS];
 
-        //Iniciar Requisitos
-        Requisito[] item = new Requisito[NUM_REQUISITOS];
-        //item[] = new Requisito("Nome",Relevancia, Tamanho)
-        item[0] = new Requisito("Notificate by email", 2, 16);
-        item[1] = new Requisito("Change password", 5, 10);
-        item[2] = new Requisito("Register users", 7, 16);
-        item[3] = new Requisito("Label tipping report", 6, 5);
-        item[4] = new Requisito("cancel borrowing request", 8, 10);
-        item[5] = new Requisito("register book", 10, 18);
-        item[6] = new Requisito("cancel borrowing", 5, 10);
-        item[7] = new Requisito("register publication", 7, 16);
-        item[8] = new Requisito("confirm borrowing", 8, 10);
-        item[9] = new Requisito("finish borrowing", 4, 7);
-        item[10] = new Requisito("log in", 10, 7);
-        item[11] = new Requisito("request borrowing ", 7, 10);
-        item[12] = new Requisito("borrowing report", 6, 5);
+            //Iniciar Requisitos
+            Requisito[] item = new Requisito[NUM_REQUISITOS];
+            //item[] = new Requisito("Nome",Relevancia, Tamanho)
+            item[0] = new Requisito("Notificate by email", 2, 16);
+            item[1] = new Requisito("Change password", 5, 10);
+            item[2] = new Requisito("Register users", 7, 16);
+            item[3] = new Requisito("Label tipping report", 6, 5);
+            item[4] = new Requisito("cancel borrowing request", 8, 10);
+            item[5] = new Requisito("register book", 10, 18);
+            item[6] = new Requisito("cancel borrowing", 5, 10);
+            item[7] = new Requisito("register publication", 7, 16);
+            item[8] = new Requisito("confirm borrowing", 8, 10);
+            item[9] = new Requisito("finish borrowing", 4, 7);
+            item[10] = new Requisito("log in", 10, 7);
+            item[11] = new Requisito("request borrowing ", 7, 10);
+            item[12] = new Requisito("borrowing report", 6, 5);
 
-        
-        double tam_max = 0;
-        //Iniciar formigas
-        Formiga[] formiga = new Formiga[13];
-        for (i = 0; i < NUM_FORMIGAS; i++) {
-            formiga[i] = new Formiga();
-            formiga[i].mochila.add(item[i]);//Iniciando um requisito em cada formiga
-        }
 
-        //Calcular a desejabilidade de cada requisito
-        for (i = 0; i < NUM_REQUISITOS; i++) {
-            item[i].setDesejabilidade(item[i].getRelevancia() / item[i].getTamanho());
-            //System.out.println(i + " " + item[i].getDesejabilidade());
-        }
+            double tam_max = 0;
+            //Iniciar formigas
+            Formiga[] formiga = new Formiga[13];
+            for (i = 0; i < NUM_FORMIGAS; i++) {
+                formiga[i] = new Formiga();
+                formiga[i].mochila.add(item[i]);//Iniciando um requisito em cada formiga
+            }
 
-        //Tamanho máximo da mochila
-        for (i = 0; i < NUM_REQUISITOS; i++) {
-            tam_max = tam_max + item[i].getTamanho();
-        }
-        tam_max = tam_max * TAM_MAX;
+            //Calcular a desejabilidade de cada requisito
+            for (i = 0; i < NUM_REQUISITOS; i++) {
+                item[i].setDesejabilidade(item[i].getRelevancia() / item[i].getTamanho());
+                //System.out.println(i + " " + item[i].getDesejabilidade());
+            }
 
-        
-            System.out.println("\nIteracao : "+w );
+            //Tamanho máximo da mochila
+            for (i = 0; i < NUM_REQUISITOS; i++) {
+                tam_max = tam_max + item[i].getTamanho();
+            }
+            tam_max = tam_max * TAM_MAX;
+
+
+            System.out.println("\nIteracao : " + w);
             //Gerar Matriz de Probabilidade
             double somaFeromonio = 0;
             double somaDesejabilidade = 0;
@@ -79,14 +83,14 @@ public class ColoniaFormiga {
                 probabilidade[i] = Math.pow(item[i].getFeromonio(), ALFA) * Math.pow(item[i].getDesejabilidade(), BETA) / (Math.pow(somaFeromonio, ALFA) * Math.pow(somaDesejabilidade, BETA));
                 probabilidade[i] = arredondar(probabilidade[i], 2);
                 //System.out.println("Probabilidade["+i+"]: " + probabilidade[i]);
-                soma  += probabilidade[i];
+                soma += probabilidade[i];
             }
 
 
             //Loop
 
             int solucao = 0, num = 0;
-            double tam = 0;
+            int tam = 0;
             for (j = 0; j < NUM_REQUISITOS; j++) {
                 int cont = 0;
                 while (formiga[j].pesoMochila() < tam_max && cont < 20) {
@@ -126,10 +130,12 @@ public class ColoniaFormiga {
             //Solucao
             System.out.println("solucao: " + solucao);
             System.out.println("Quant requisitos: " + num + " Tamanho da mochila: " + tam);
-            for(i=0;i<formiga[solucao].mochila.size();i++){
-            //System.out.println("nome: "+formiga[solucao].mochila.get(i).getNome()+ " Relevancia: "+formiga[solucao].mochila.get(i).getRelevancia() + " Tamanho: "+formiga[solucao].mochila.get(i).getTamanho() );
-            
+            for (i = 0; i < formiga[solucao].mochila.size(); i++) {
+                //System.out.println("nome: "+formiga[solucao].mochila.get(i).getNome()+ " Relevancia: "+formiga[solucao].mochila.get(i).getRelevancia() + " Tamanho: "+formiga[solucao].mochila.get(i).getTamanho() );
             }
+            solucoes[w] = tam;
+            somaSolucao += tam;
+            
             //Atualizar Feromonio
             for (i = 0; i < NUM_REQUISITOS; i++) {
                 if (formiga[solucao].mochila.contains(item[i])) {
@@ -139,13 +145,25 @@ public class ColoniaFormiga {
                 }
 
             }
-         
-        for (i = 0; i < NUM_FORMIGAS; i++) {
-            formiga[i].mochila.clear();
-        }
+
+            for (i = 0; i < NUM_FORMIGAS; i++) {
+                formiga[i].mochila.clear();
+            }
 
         }//Fim da Iteracao
-
+        
+        //Media
+        media=somaSolucao/iteracoes;
+        System.out.println("Media: "+media);
+        
+        //Desvio Padrao
+        for (i = 0; i < solucoes.length; i++) {
+            dp= dp + Math.pow(solucoes[i]-media, 2);
+        }
+        //System.out.println(dp/(iteracoes-1.0));
+        dp=Math.sqrt(dp/(iteracoes-1.0));
+        System.out.println("Desvio Padrao: "+dp);
+        
     }
 
     static double arredondar(double valor, int casas) {
